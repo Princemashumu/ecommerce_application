@@ -2,6 +2,10 @@
 import React from 'react';
 import Navbarlandingpage from './Navbar-landingpage';
 import { Container } from 'react-bootstrap';
+import GadgetsSection from './GadgetsSection';
+import FooterComponent from './FooterComponent';
+import HomeAppliancesSection from './HomeAppliancesSection';
+import PreOwnedSection from './PreOwnedSection';
 
 const LandingPage = () => {
   return (
@@ -12,6 +16,10 @@ const LandingPage = () => {
         <p>Your one-stop shop for all your needs. Explore our collection of home appliances, gadgets, and more.</p>
         <p>Start shopping with <span style={{ color: '#50b8e7' }}>EasyBuy</span> today!</p>
       </Container>
+      <HomeAppliancesSection/>
+      <GadgetsSection/>
+      <PreOwnedSection/>
+      <FooterComponent/>
     </div>
   );
 };
