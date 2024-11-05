@@ -1,0 +1,60 @@
+/* Container for scrolling wrapper and see-more button */
+.scrolling-wrapper-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Space between products and button */
+}
+
+/* Scrollable container styling */
+.scrolling-wrapper {
+  display: flex;
+  gap: 3rem; /* Adds spacing between cards */
+  padding: 0rem 0;
+  overflow: hidden; /* Hide any scrollbars */
+}
+
+.product-card {
+  width: 270px; /* Set a width for each card */
+  flex: 0 0 auto; /* Prevent the card from shrinking */
+  border: 1px solid #ddd; /* Optional: Add a border to the card */
+  border-radius: 8px; /* Optional: Add rounded corners to the card */
+}
+
+/* See More Button */
+.see-more-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #007bff;
+  border-color: #007bff;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.see-more-button:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+
+.skyblue-button {
+  background-color: skyblue;
+  border-color: skyblue;
+  color: #fff;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.skyblue-button:hover {
+  background-color: #ff7300;
+  border-color: #87ceeb;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .product-card {
+      width: 200px; /* Adjust the width for smaller screens */
+  }
+
+  .see-more-button {
+      font-size: 0.9rem;
+  }
+}

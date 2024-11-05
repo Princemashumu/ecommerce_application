@@ -1,0 +1,52 @@
+/* src/components/SellerDashboard.css */
+
+.d-flex {
+    display: flex;
+  }
+  
+  .sidebar {
+    width: 250px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .sidebar-brand {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .menu-items {
+    flex: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .menu-items .nav-link {
+    color: #000;
+    padding: 10px 0;
+    text-align: center;
+  }
+  
+  .menu-items .nav-link:hover {
+    color: #007bff;
+  }
+  
+  .sidebar-settings {
+    margin-top: auto;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  

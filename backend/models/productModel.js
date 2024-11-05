@@ -14,6 +14,10 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  category: {
+    type: String,
+    required: true, // Ensure category is required
+  },
   seller: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User', // Reference to the User model
@@ -21,4 +25,6 @@ const productSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-module.exports = mongoose.model('Product', productSchema);
+const Product = mongoose.model('Product', productSchema);
+
+module.exports = Product;
