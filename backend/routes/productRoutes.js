@@ -1,5 +1,3 @@
-// routes/productRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product'); // Adjust the path based on your file structure
@@ -34,25 +32,32 @@ router.get('/category/:category', async (req, res) => {
 
 // Route to add a new product
 router.post('/', async (req, res) => {
-  const { name, description, category } = req.body;
+  const { name, description, category, price, image } = req.body; // Include image in request body
 
   try {
-    const newProduct = new Product({ name, description, category });
+    if (!name || !description || !category || !price || !image) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    const newProduct = new Product({ name, description, category, price, image }); // Add image to new product
     const savedProduct = await newProduct.save(); // Save the new product to MongoDB
     res.status(201).json(savedProduct); // Respond with the created product
   } catch (error) {
     console.error('Error adding product:', error);
-    res.status(500).json({ message: 'Server error' });
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: error.message });
+    }
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
 // Route to update a product by ID
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, description, category } = req.body;
+  const { name, description, category, price, image } = req.body; // Include image in request body
 
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(id, { name, description, category }, { new: true });
+    const updatedProduct = await Product.findByIdAndUpdate(id, { name, description, category, price, image }, { new: true });
     if (!updatedProduct) {
       return res.status(404).json({ message: 'Product not found' });
     }

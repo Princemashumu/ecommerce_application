@@ -17,10 +17,7 @@ const RegistrationModal = ({ show, handleClose }) => {
   const handleSellerAlertClose = () => {
     setShowRegistration(true); // Show registration modal after closing the alert
   };
-//   const handleCancel = () => {
-//     handleClose(); // Close the modal completely
-//   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');

@@ -1,53 +1,78 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Button, Container, Row, Col, Nav, Navbar, Modal, Form } from 'react-bootstrap';
-import NavbarComponent from './SellerNavBar';
-import './SellerDashboard.css'; // Import custom styles for the sidebar
+import './SellerDashboard.css'; // Ensure the CSS file is correctly linked
 import { Link } from 'react-router-dom';
-import axios from 'axios'; // Import Axios
+import axios from 'axios'; // For making HTTP requests
+import SellerNavBar from '../components/SellerNavBar';
 
 const SellerDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState('Dashboard');
-  const [products, setProducts] = useState([]); // State to hold products
-  const [loading, setLoading] = useState(true); // State for loading
-  const [showModal, setShowModal] = useState(false); // State to control modal visibility
-  const [newProduct, setNewProduct] = useState({ name: '', description: '', category: '' }); // State for new product data
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [newProduct, setNewProduct] = useState({ name: '', description: '', category: '', price: '' });
+  const [imageFile, setImageFile] = useState(null);
+  const [error, setError] = useState(null);
 
   // Fetch products from the API
   const fetchProducts = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const response = await axios.get('http://localhost:5000/api/products'); // Adjust endpoint as needed
-      setProducts(response.data); // Assuming the API returns a list of products
-      setLoading(false);
+      const response = await axios.get('http://localhost:5000/api/products');
+      setProducts(response.data);
     } catch (error) {
       console.error('Error fetching products:', error);
+      setError('Failed to fetch products. Please try again later.');
+    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchProducts();
-  }, []); // Fetch products when the component mounts
+  }, []);
 
-  // Determine which products to display based on selected category
+  // Determine products to display based on selected category
   const displayedProducts = selectedCategory === 'All'
     ? products
-    : products.filter(product => product.category === selectedCategory); // Adjust to match your API data structure
+    : products.filter(product => product.category === selectedCategory);
 
-  // Handle product form change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setNewProduct(prevProduct => ({ ...prevProduct, [name]: value }));
+    setNewProduct((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  // Handle form submission to add a new product
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!newProduct.name || !newProduct.description || !newProduct.category || !newProduct.price || !imageFile) {
+      alert('All fields are required.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('name', newProduct.name);
+    formData.append('description', newProduct.description);
+    formData.append('category', newProduct.category);
+    formData.append('price', newProduct.price);
+    formData.append('image', imageFile);
+
     try {
-      const response = await axios.post('http://localhost:5000/api/products', newProduct); // Adjust endpoint as needed
-      console.log('Product added:', response.data); // Log the response
-      setProducts([...products, response.data]); // Update products state with the new product
-      setNewProduct({ name: '', description: '', category: '' }); // Reset form fields
-      setShowModal(false); // Close the modal
+      const response = await axios.post('http://localhost:5000/api/products', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setProducts([...products, response.data]);
+      setNewProduct({ name: '', description: '', category: '', price: '' });
+      setImageFile(null);
+      setShowModal(false);
     } catch (error) {
       console.error('Error adding product:', error.response ? error.response.data : error.message);
       alert('Failed to add product. Please check the console for details.');
@@ -68,15 +93,13 @@ const SellerDashboard = () => {
           <Nav.Link onClick={() => setSelectedCategory('Pre Owned')}>Pre Owned</Nav.Link>
         </Nav>
         <Nav className="flex-column mt-auto">
-          <Nav.Link href="#settings" className="sidebar-settings">
-            Settings
-          </Nav.Link>
+          <Nav.Link href="#settings" className="sidebar-settings">Settings</Nav.Link>
         </Nav>
       </div>
 
       {/* Main Content */}
       <div className="main-content">
-        <NavbarComponent />
+      <SellerNavBar/>
         <Container>
           <Card className="text-center my-4">
             <Card.Body>
@@ -90,7 +113,8 @@ const SellerDashboard = () => {
             </Card.Body>
           </Card>
 
-          {/* Product List Section */}
+          {error && <div className="alert alert-danger">{error}</div>}
+
           <h3 className="my-4">
             {selectedCategory === 'Dashboard' ? 'Overview' : `${selectedCategory} Products`}
           </h3>
@@ -98,12 +122,14 @@ const SellerDashboard = () => {
             {loading ? (
               <p>Loading products...</p>
             ) : (
-              displayedProducts.map((product) => (
-                <Col md={4} className="mb-4" key={product.id}>
+              displayedProducts.map((product, index) => (
+                <Col md={4} className="mb-4" key={product.id || index}>
                   <Card>
+                    {product.image && <Card.Img variant="top" src={product.image} alt={product.name} />}
                     <Card.Body>
                       <Card.Title>{product.name}</Card.Title>
                       <Card.Text>{product.description}</Card.Text>
+                      <Card.Text><strong>Price: </strong>${product.price}</Card.Text>
                       <Button variant="outline-primary" className="m-1">Edit</Button>
                       <Button variant="outline-danger" className="m-1">Delete</Button>
                     </Card.Body>
@@ -161,6 +187,26 @@ const SellerDashboard = () => {
                 <option value="Gadgets">Gadgets</option>
                 <option value="Pre Owned">Pre Owned</option>
               </Form.Control>
+            </Form.Group>
+            <Form.Group controlId="formProductPrice">
+              <Form.Label>Price</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Enter product price"
+                name="price"
+                value={newProduct.price}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formProductImage">
+              <Form.Label>Image</Form.Label>
+              <Form.Control
+                type="file"
+                name="image"
+                onChange={handleFileChange}
+                required
+              />
             </Form.Group>
             <Button variant="primary" type="submit">
               Add Product

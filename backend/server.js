@@ -44,7 +44,7 @@ app.get('/', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Internal Server Error' });
+  res.status(500).json({ message: 'Internal Server Error', error: err.message });
 });
 
 // Set the port from environment variables or default to 5000
